@@ -1,13 +1,26 @@
+<button (click)="  createNewProduct()">Create</button>
 <div class="products--grid">
   <app-product
     [product]="product"
     *ngFor="let product of products"
     (addedProduct)="onAddToShoppingCart($event)"
+    (showProduct)="onShowDetail($event)"
   ></app-product>
-  <div class="product-detail">
-    <div>
-      <button>Close</button>
-      Contenido
+  <button *ngIf="offset >= limit" (click)="loadLess()"><< Next</button>
+  <button *ngIf="offset < validLoadLess" (click)="loadMore()">Next >></button>
+  <div class="product-detail" [class.active]="showProductDetail">
+    <div *ngIf = "productChosen">
+      <button (click)="toggleProductDetail()">Close</button>
+      <h1>{{productChosen.title}}</h1>
+      <swiper-container 
+        [slidesPerView]="1">
+        <swiper-slide *ngFor = "let img of productChosen.images">
+          <img width= "300" [src]="img" alt="">
+        </swiper-slide>
+      </swiper-container>
+      <p>{{productChosen.description}}</p>
+      <button (click)="updateProduct()">Editar</button>
+      <button (click)="deleteProducts()">Eliminar</button>
     </div>
   </div>
 </div>
