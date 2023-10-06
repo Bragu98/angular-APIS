@@ -8,7 +8,6 @@ import { register } from 'swiper/element/bundle';
 register();
 
 
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ImgComponent } from './components/img/img.component';
@@ -34,7 +33,8 @@ import { HighlightDirective } from './directives/highlight.directive';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule    
+    FormsModule,
+    /* SweetAlert2Module */
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "start:proxy": "ng serve --proxy-config ./poxy.config.json",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
@@ -19,8 +20,10 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
+    "@sweetalert2/ngx-sweetalert2": "^12.2.0",
     "date-fns": "^2.29.3",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.7.31",
     "swiper": "^10.3.1",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"

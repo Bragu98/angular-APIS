@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { switchMap, zip } from 'rxjs';
 
-import { CreateNewProductDTO, Product, UpdateProductDTO } from '../../models/product.model';
+import { CreateNewProductDTO, Product, UpdateProductDTO} from '../../models/product.model';
 
 import { StoreService } from '../../services/store.service';
 import { ProductsService } from '../../services/products.service';
+import Swal from 'sweetalert2';
+/* import Swal from 'sweetalert2/dist/sweetalert2.js' */
+
+
 
 @Component({
   selector: 'app-products',
@@ -30,6 +35,7 @@ export class ProductsComponent implements OnInit {
 
   limit = 10;
   offset = 0;
+  statusDetail:'loading' | 'success' | 'error' | 'init' = 'init';
 
   allProducts : Product[]= [];
   validLoadLess : number = 0;
@@ -43,15 +49,14 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.productsService.getProductsByPages(this.limit,this.offset)
-    .subscribe(data => {
-      this.products = data;
+    .subscribe((data : Product[]) => {
+      this.products = data.reverse();
     });
     this.productsService.getAllProducts()
-    .subscribe(data=> {
+    .subscribe(data => {
       this.allProducts = data;
       this.validLoadLess = this.allProducts.length - this.limit;
     });
-    
   }
 
   onAddToShoppingCart(product: Product) {
@@ -64,13 +69,54 @@ export class ProductsComponent implements OnInit {
   }
 
   onShowDetail(id:string) {
+    this.statusDetail = 'loading';
     this.productsService.getProduct(id)
-    .subscribe(data=>{
-      console.log('product', data);
+    .subscribe({
+      next: (data)=>{
       this.toggleProductDetail();
       this.productChosen = data;
-    })
+      this.statusDetail = 'success';
+    }, error : (errorMsg) => {
+      //Manejo de errores al momento de solicitar un producto que no existe
+      //El mensaje del error viene modificado desde el products.service
+      /* window.alert(errorMsg); */
+      this.statusDetail = 'error';
+      Swal.fire({
+        title : errorMsg,
+        text : errorMsg,
+        icon : 'error',
+        confirmButtonText: 'OK'
+      });
+  }})
   }
+
+  readAndUpdate(id:string) {
+    this.productsService.getProduct(id)
+    //para evitar el callback hell
+    .pipe(
+      // switchMap Cuando se tienen dependencia una de otra 
+      switchMap((product) => this.productsService.update(product.id, {title:"change"})),
+      switchMap((product) => this.productsService.update(product.id, {title:"change"})),
+      switchMap((product) => this.productsService.update(product.id, {title:"change"}))
+    ).subscribe (data =>{
+      console.log(data)
+    });
+    // zip cuando no se tienen dependencia y pueden correr en paralelo (se paso la logica del zip a product.service, esto con el fin de poder reutilizarla despues)
+    this.productsService.fetchReadAndUpdate(id, {title:"cambio"})
+    .subscribe (response => {
+    const read = response[0];
+    const update = response[1];
+   })
+    // ejemplo de callback hell
+    /* .subscribe( data => {
+      const product = data;
+      this.productsService.update(product.id, {title:"change"})
+        .subscribe(rtaUpdate => {
+          console.log(rtaUpdate)
+          .suscribe......
+      })
+    }) */
+  } 
 
   createNewProduct() {
     const product: CreateNewProductDTO = {
@@ -87,6 +133,7 @@ export class ProductsComponent implements OnInit {
     .subscribe(data => {
       this.products.unshift(data);
     });
+    window.location.reload();
   }
 
   updateProduct() {
@@ -128,10 +175,6 @@ export class ProductsComponent implements OnInit {
     .subscribe(data => {
       this.products = data;
     });
-  }
-
-  validLessPag() {
-    
   }
 
 }
