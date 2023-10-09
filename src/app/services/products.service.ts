@@ -4,7 +4,7 @@ import { retry, catchError, map } from 'rxjs/operators';
 import { throwError, zip, switchMap } from 'rxjs';
 
 import { CreateNewProductDTO, Product, UpdateProductDTO } from './../models/product.model';
-
+import { checkTime } from '../interceptor/time.interceptor';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -46,7 +46,8 @@ export class ProductsService {
 
   getProductsByPages(limit: number, offset:number) {
     return this.http.get<Product[]>(`${this.apiUrl}`, {
-      params : {limit, offset}
+      params : {limit, offset},
+      context: checkTime()
     })
     .pipe (
       //map nos sirve para agreagar informacion extra de la que nos trae la api sin modificarla 
@@ -87,5 +88,3 @@ export class ProductsService {
   }
 
 }
-
-//creae una branch de developer

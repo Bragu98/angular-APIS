@@ -1,4 +1,16 @@
 <app-nav></app-nav>
+<button (click)="createUser()">Crear Usuario</button>
+<p>
+    <a href="../assets/files/texto.txt" download>Descargar</a>
+</p>
+<p>
+    <button (click)="dowloadPdf()">Descargar pdf</button>
+</p>
+<p>
+    <input type="file" (change)="onUpload($event)">
+    <img *ngIf="imgRta" [src]="imgRta">
+</p>
+<hr>
 <app-products></app-products>
 <!-- <p><input type="text" [(ngModel)]="imgParent" /></p>
 <button (click)="toggleImg()">Toggle Img</button>
